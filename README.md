@@ -1,4 +1,4 @@
-# Sözlü Komut Konsolu — v2
+# Sözlü Komut Konsolu
 
 Sesle çalışan, konuşmacıyı tanıyan, parametreli komutları yürüten Python konsolu.
 Bu sürümde **üç büyük geliştirme** entegre edildi:
