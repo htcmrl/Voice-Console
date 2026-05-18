@@ -1,10 +1,9 @@
 # Sözlü Komut Konsolu
 
 Sesle çalışan, konuşmacıyı tanıyan, parametreli komutları yürüten Python konsolu.
-Bu sürümde **üç büyük geliştirme** entegre edildi:
-
-1. **Daha güçlü konuşmacı tanıma** — Resemblyzer (GE2E 256-d sinir ağı embedding) backend.
-2. **Daha hızlı STT** — faster-whisper (CTranslate2, CPU'da ~3-4x).
+Özellikler:
+1. **Güçlü konuşmacı tanıma** — Resemblyzer (GE2E 256-d sinir ağı embedding) backend.
+2. **Hızlı STT** — faster-whisper (CTranslate2, CPU'da ~3-4x).
 3. **Parametreli komut sistemi** — `"ses {level}"`, `"ara {query:rest}"`, vb.
 
 ## Mimari
@@ -17,27 +16,27 @@ voice-console/
 │   ├── vad.py                        # Sessizlik tabanlı cümle bölme
 │   └── noise.py                      # Gürültü kalibrasyonu
 ├── speaker/
-│   ├── backends.py        [YENİ]     # MFCCBackend | ResemblyzerBackend
+│   ├── backends.py                   # MFCCBackend | ResemblyzerBackend
 │   ├── features.py                   # MFCC + delta öznitelikleri (MFCC backend için)
-│   ├── enrollment.py     [yenilendi] # Aktif backend'e göre embedding kaydı
-│   ├── verification.py   [yenilendi] # Aktif backend ile identify
+│   ├── enrollment.py                 # Aktif backend'e göre embedding kaydı
+│   ├── verification.py               # Aktif backend ile identify
 │   └── liveness.py                   # İnsan sesi tespiti
 ├── stt/
-│   ├── backends.py        [YENİ]     # OpenAIWhisperBackend | FasterWhisperBackend
-│   └── transcriber.py    [yenilendi] # Backend facade
+│   ├── backends.py                   # OpenAIWhisperBackend | FasterWhisperBackend
+│   └── transcriber.py                # Backend facade
 ├── commands/
-│   ├── registry.py       [yenilendi] # Pattern + slot + param spec
-│   ├── parser.py         [yenilendi] # Regex pattern matching + param doğrulama
-│   └── executor.py       [yenilendi] # shlex.quote ile güvenli render
+│   ├── registry.py                   # Pattern + slot + param spec
+│   ├── parser.py                     # Regex pattern matching + param doğrulama
+│   └── executor.py                   # shlex.quote ile güvenli render
 ├── reports/plotter.py                # Matplotlib grafik raporları
 ├── data/
 │   ├── enrollment_text.txt           # Türkçe fonetik dengeli metin
 │   └── voiceprints/                  # <isim>.wav, <isim>.npy, <isim>.backend
 ├── enroll_user.py                    # Kayıt scripti
-├── test_signatures.py    [yenilendi] # Aktif backend ile karşılaştırma + grafik
-├── test_commands.py       [YENİ]     # Parser + executor birim testleri
-├── test_e2e.py            [YENİ]     # espeak-ng ile uçtan uca test
-├── main.py               [yenilendi] # Ana döngü (backend bilgili)
+├── test_signatures.py                # Aktif backend ile karşılaştırma + grafik
+├── test_commands.py                  # Parser + executor birim testleri
+├── test_e2e.py                       # espeak-ng ile uçtan uca test
+├── main.py                           # Ana döngü (backend bilgili)
 ├── requirements.txt
 └── README.md
 ```
@@ -73,7 +72,7 @@ STT_BACKEND = "faster_whisper"
 (`.backend` etiket dosyalarına bakar). Backend değişirse her kullanıcıyı
 yeniden enroll etmek gerekir.
 
-## Yeni Komut Sistemi
+##  Komut Sistemi
 
 Eski biçim hâlâ destekleniyor (`COMMAND_REGISTRY = {kw: cmd}`), ama yeni
 biçim `commands/registry.py: DEFAULT_COMMANDS` ile çok daha güçlü:
@@ -128,7 +127,7 @@ python enroll_user.py carol
 Bu, aktif backend'in (örn. resemblyzer) embedding'ini çıkarır ve
 `data/voiceprints/alice.{wav, npy, backend}` üretir.
 
-### 3) Üç kişiyi karşılaştır, rapor çıkar
+### 3) Kişileri karşılaştır, rapor çıkar
 
 ```bash
 python test_signatures.py
