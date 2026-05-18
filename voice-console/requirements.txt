@@ -1,0 +1,17 @@
+# Ses I/O
+sounddevice>=0.4.6
+soundfile>=0.12.1
+
+# Sinyal işleme
+numpy>=1.24
+scipy>=1.10
+librosa>=0.10.1
+matplotlib>=3.7
+
+# STT — ikisini de kurmak gerekmiyor, settings.STT_BACKEND ile seçilir
+openai-whisper>=20231117    # backend: "whisper"
+faster-whisper>=1.0         # backend: "faster_whisper" (önerilen: 3-4x CPU hızı)
+
+# Konuşmacı tanıma — ikisini de kurmak gerekmiyor, settings.SPEAKER_BACKEND ile seçilir
+# MFCC backend için ek bir şey gerekmez (librosa zaten var)
+resemblyzer>=0.1.4          # backend: "resemblyzer" (önerilen: çok daha doğru)
