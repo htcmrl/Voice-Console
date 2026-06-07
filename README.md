@@ -1,10 +1,6 @@
-# Sözlü Komut Konsolu
+# Sesli Komut Konsolu 
 
-Sesle çalışan, konuşmacıyı tanıyan, parametreli komutları yürüten Python konsolu.
-Özellikler:
-1. **Güçlü konuşmacı tanıma** — Resemblyzer (GE2E 256-d sinir ağı embedding) backend.
-2. **Hızlı STT** — faster-whisper (CTranslate2, CPU'da ~3-4x).
-3. **Parametreli komut sistemi** — `"ses {level}"`, `"ara {query:rest}"`, vb.
+
 
 ## Mimari
 
@@ -36,7 +32,7 @@ voice-console/
 ├── test_signatures.py                # Aktif backend ile karşılaştırma + grafik
 ├── test_commands.py                  # Parser + executor birim testleri
 ├── test_e2e.py                       # espeak-ng ile uçtan uca test
-├── main.py                           # Ana döngü (backend bilgili)
+├── main.py                           # Ana döngü 
 ├── requirements.txt
 └── README.md
 ```
@@ -67,28 +63,25 @@ SPEAKER_BACKEND = "resemblyzer"
 STT_BACKEND = "faster_whisper"
 ```
 
-**Önemli:** Backend değiştirince eski `.npy` imzaları farklı boyutta/dağılımdadır;
-`load_all_voiceprints()` aktif backend ile uyumsuz olanları otomatik atlar
-(`.backend` etiket dosyalarına bakar). Backend değişirse her kullanıcıyı
-yeniden enroll etmek gerekir.
 
-##  Komut Sistemi
 
-Eski biçim hâlâ destekleniyor (`COMMAND_REGISTRY = {kw: cmd}`), ama yeni
-biçim `commands/registry.py: DEFAULT_COMMANDS` ile çok daha güçlü:
+## Komut Sistemi
+
 
 ```python
 {
-    "name": "ses_seviyesi",
-    "patterns": [
-        "ses {level}",
-        "sesi {level} yap",
-        "ses seviyesi {level}",
-    ],
-    "action": "amixer -q set Master {level}%",
-    "params": {"level": {"type": "int", "min": 0, "max": 100}},
-    "description": "Master ses seviyesini değiştirir (0-100)",
-},
+        "name": "ses_seviyesi",
+        "patterns": [
+            "ses {level:tr_int}",
+            "sesi {level:tr_int} yap",
+            "ses seviyesi {level:tr_int}",
+            "ses seviyesini {level:tr_int} yap",
+            "volume {level:tr_int}",
+        ],
+        "action": "cmd /c echo Ses seviyesi {level} olarak ayarlandi",
+        "params": {"level": {"type": "tr_int", "min": 0, "max": 100}},
+        "description": "Ses seviyesini ayarlar (0-100)",
+    },
 ```
 
 **Pattern özellikleri:**
@@ -139,7 +132,7 @@ Konsolda benzerlik matrisi, liveness metrikleri, eşik uyarısı;
 ### 4) Canlı konsolu çalıştır
 
 ```bash
-python main.py                # Tam pipeline
+python main.py                       # Tam pipeline
 python main.py --no-speaker-check    # Sadece STT + komut
 python main.py --no-liveness         # Liveness atla
 python main.py --list-devices        # Cihazları listele
@@ -162,8 +155,6 @@ Backend: resemblyzer
   Margin = +0.142    ← sağlam ayrım, eşik 0.70 güvenli
 ```
 
-**Sonuç:** Resemblyzer kuvvetle önerilir. MFCC sadece bağımlılık eklemek
-istemediğin/edge cihaz için.
 
 ## Komut Örnekleri
 
@@ -181,24 +172,7 @@ istemediğin/edge cihaz için.
 | "Sesi 150 yap"                          | hata: max=100      | (range)                |
 | "Ses çok"                               | hata: tip          | (int değil)            |
 
-Kendi komutunu eklemek için `config/settings.py: COMMANDS` listesine ya da
-`commands/registry.py: DEFAULT_COMMANDS` listesine ekleyebilirsin.
 
-## Güvenlik Notları
 
-- **Shell injection**: Tüm slot değerleri `shlex.quote` ile escape edilir.
-  `parse("Aç ; rm -rf /")` çalıştırılırsa rendered komut `xdg-open '; rm -rf /'`
-  olur — tek argüman olarak işlenir, exec olmaz.
-- **Konuşmacı bypass**: Resemblyzer replay/deep-fake'e karşı zayıf değil ama
-  korumalı değil. Üretim için anti-spoof (RawNet2/AASIST) gerekir.
-- **Liveness**: Yalnızca sinyal istatistikleri (hız, pitch std, flatness).
-  TTS sentetik sesleri liveness'ı geçebilir; insan sesinin sinyal yapısına
-  yakın olduğu için bu beklenen davranış.
 
-## Yol Haritası
 
-- [ ] Tek konuşmadan çoklu konuşmacı diarization (pyannote)
-- [ ] Hot-word ile uyandırma (porcupine/pico) → her cümleyi Whisper'a göndermek yerine
-- [ ] Web arayüzü (FastAPI + WebSocket) — şu an konsol; istersen sonraki adım
-- [ ] Resemblyzer yerine ECAPA-TDNN (SpeechBrain) — biraz daha doğru ama büyük model
-- [ ] Anti-spoof katmanı (replay attack koruması)

@@ -1,0 +1,12 @@
+.venv/
+venv/
+__pycache__/
+*.pyc
+.idea/
+reports/output/
+data/voiceprints/*.wav
+data/voiceprints/*.npy
+data/voiceprints/*.backend
+data/test_recordings/
+Thumbs.db
+.DS_Store

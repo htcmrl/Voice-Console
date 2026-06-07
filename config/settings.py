@@ -61,27 +61,15 @@ FASTER_WHISPER_COMPUTE = "int8"        # "int8" (CPU) / "float16" (GPU) / "float
 FASTER_WHISPER_VAD_FILTER = True       # Whisper dahili Silero VAD ile sessizliği filtrele
 
 # Uyandırma kelimesi
-WAKE_WORD = ""               # ör. "konsol" — boş bırakılırsa her cümle değerlendirilir
+WAKE_WORD = "" #
 
-# -------- Komutlar --------
-# Yeni format için commands/registry.py içindeki DEFAULT_COMMANDS kullanılır.
-# Burada eski sözlük formatıyla ekstra komutlar tanımlanabilir; bunlar default
-# listeye eklenir (override etmez).
 COMMAND_REGISTRY = {
-    # Örnek legacy giriş — boş bırakabilirsin
     # "merhaba": "echo 'Selam!'",
 }
 
-# Yeni format ile özel komutlar tanımlamak istersen burayı doldur — bu durumda
-# DEFAULT_COMMANDS atlanır ve sadece bu liste kullanılır.
-# Örn:
-# COMMANDS = [
-#     {"name": "müzik_çal", "patterns": ["müzik {parça}"],
-#      "action": "mpv ~/Music/{parça}.mp3",
-#      "params": {"parça": {"type": "word"}}},
-# ]
+
 COMMANDS: list = []
 
-# Boş bırakırsan eski davranış (sessizlik-tabanlı) çalışır.
-PTT_START_PHRASE = "konsol dinle"
-PTT_STOP_PHRASE = "konsol tamam"
+# Boş bırakılırsa eski davranış (sessizlik tabanlı) çalışır.
+PTT_START_PHRASE = "başla"
+PTT_STOP_PHRASE = "sonlandır"

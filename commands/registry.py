@@ -1,5 +1,5 @@
 """
-Yapılandırılmış komut sözlüğü.
+Yapılandırılmış komut sözlüğü — zenginleştirilmiş pattern setiyle.
 
 Bir komut:
 {
@@ -10,11 +10,6 @@ Bir komut:
     "description": "kullanıcıya gösterilebilir açıklama",
 }
 
-Slot türleri:
-  "word"   : tek kelime (boşluk içermez)    — varsayılan
-  "int"    : tam sayı; min/max opsiyonel
-  "tr_int" : Türkçe yazılı sayı veya rakam ("yetmiş" → 70)
-  "rest"   : pattern'den sonraki tüm metin (arama sorgusu vb.)
 """
 from __future__ import annotations
 from typing import Any
@@ -23,26 +18,41 @@ from config import settings
 
 DEFAULT_COMMANDS: list[dict[str, Any]] = [
     {
-        "name": "selam",
-        "patterns": ["seç", "tamam"],
-        "action": "cmd /c chcp 65001 >nul && echo [{__keyword__}] algılandı",
-        "description": "Anahtar kelimeyi yankıla",
-    },
-    {
         "name": "tarih",
-        "patterns": ["tarih", "saat kaç", "bugün ne"],
+        "patterns": [
+            "tarih",
+            "tarih ne",
+            "tarih nedir",
+            "bugün ne",
+            "bugün ne tarih",
+            "saat kaç",
+            "saat ne",
+            "saat söyle",
+        ],
         "action": "cmd /c date /t && time /t",
         "description": "Sistem tarih ve saatini gösterir",
     },
     {
         "name": "listele",
-        "patterns": ["listele", "dosyaları göster"],
+        "patterns": [
+            "listele",
+            "dosyaları göster",
+            "dosyaları listele",
+            "klasör içeriği",
+            "dosyalar ne",
+        ],
         "action": "cmd /c dir",
         "description": "Mevcut dizini listeler",
     },
     {
         "name": "kim",
-        "patterns": ["kim", "ben kimim"],
+        "patterns": [
+            "kim",
+            "ben kimim",
+            "kullanıcı kim",
+            "kullanıcı adı",
+            "kullanıcı adım",
+        ],
         "action": "whoami",
         "description": "Geçerli kullanıcı adı",
     },
@@ -57,7 +67,94 @@ DEFAULT_COMMANDS: list[dict[str, Any]] = [
         ],
         "action": "cmd /c echo Ses seviyesi {level} olarak ayarlandi",
         "params": {"level": {"type": "tr_int", "min": 0, "max": 100}},
-        "description": "Master ses seviyesini değiştirir (0-100)",
+        "description": "Ses seviyesini ayarlar (0-100)",
+    },
+    {
+        "name": "pil_durumu",
+        "patterns": [
+            "pil",
+            "pil nasıl",
+            "pil durumu",
+            "pil ne kadar",
+            "pilim nasıl",
+            "pilim ne kadar",
+            "pilim doluluk",
+            "şarj ne kadar",
+            "şarj durumu",
+            "şarjım ne kadar",
+            "batarya",
+            "batarya durumu",
+        ],
+        "action": "cmd /c chcp 65001 >nul && wmic path Win32_Battery get EstimatedChargeRemaining /value | findstr =",
+        "description": "Pil seviyesini yüzde olarak gösterir",
+    },
+    {
+        "name": "ip_adresim",
+        "patterns": [
+            "ip",
+            "ip adresim",
+            "ip adresi",
+            "ip nedir",
+            "ip ne",
+            "ağ bilgisi",
+            "ağ adresim",
+            "internet adresi",
+        ],
+        "action": "cmd /c chcp 65001 >nul && ipconfig | findstr /R /C:\"IPv4\"",
+        "description": "Yerel IP adres(ler)ini gösterir",
+    },
+    {
+        "name": "ekrani_kilitle",
+        "patterns": [
+            "ekranı kilitle",
+            "ekran kilitle",
+            "ekranı kapat",
+            "kilitle",
+            "ekran kilitlensin",
+            "bilgisayarı kilitle",
+            "lock",
+        ],
+        "action": "rundll32.exe user32.dll,LockWorkStation",
+        "description": "Windows oturumunu kilitler",
+    },
+    {
+        "name": "hesap_makinesi",
+        "patterns": [
+            "hesap makinesi",
+            "hesap makinesi aç",
+            "hesap makinesini aç",
+            "kalkülatör",
+            "kalkülatör aç",
+            "kalkülatörü aç",
+            "kalkülator",
+            "kalkülator aç",
+        ],
+        "action": "cmd /c start \"\" calc.exe",
+        "description": "Windows hesap makinesini açar",
+    },
+    {
+        "name": "yazi_tura",
+        "patterns": [
+            "yazı tura",
+            "yazı tura at",
+            "yazı mı tura mı",
+            "tura mı yazı mı",
+            "yazi tura",
+        ],
+        "action": "python -c \"import random; print(random.choice(['Yazı geldi!', 'Tura geldi!']))\"",
+        "description": "Yazı tura atışı simüle eder",
+    },
+    {
+        "name": "zar_at",
+        "patterns": [
+            "zar at",
+            "zar fırlat",
+            "zar atışı",
+            "zar",
+            "zar atalım",
+        ],
+        "action": "python -c \"import random; print(f'Zar geldi: {{random.randint(1, 6)}}')\"",
+        "description": "1-6 arası rastgele zar atar",
     },
     {
         "name": "uygulama_ac",
@@ -72,42 +169,6 @@ DEFAULT_COMMANDS: list[dict[str, Any]] = [
         "action": "cmd /c start \"\" \"https://duckduckgo.com/?q={query}\"",
         "params": {"query": {"type": "rest"}},
         "description": "DuckDuckGo'da arama yapar",
-    },
-{
-        "name": "pil_durumu",
-        "patterns": ["pil nasıl", "pil durumu", "şarj ne kadar", "pilim nasıl"],
-        "action": "cmd /c chcp 65001 >nul && wmic path Win32_Battery get EstimatedChargeRemaining /value | findstr =",
-        "description": "Pil seviyesini yüzde olarak gösterir",
-    },
-    {
-        "name": "ip_adresim",
-        "patterns": ["ip adresim", "ip nedir", "ağ bilgisi", "ip adresi"],
-        "action": "cmd /c chcp 65001 >nul && ipconfig | findstr /R /C:\"IPv4\"",
-        "description": "Yerel IP adres(ler)ini gösterir",
-    },
-    {
-        "name": "ekrani_kilitle",
-        "patterns": ["ekranı kilitle", "kilitle", "ekran kilitlensin", "bilgisayarı kilitle"],
-        "action": "rundll32.exe user32.dll,LockWorkStation",
-        "description": "Windows oturumunu kilitler",
-    },
-    {
-        "name": "hesap_makinesi",
-        "patterns": ["hesap makinesi", "hesap makinesi aç", "kalkülatör aç", "kalkülatörü aç"],
-        "action": "cmd /c start \"\" calc.exe",
-        "description": "Windows hesap makinesini açar",
-    },
-    {
-        "name": "yazi_tura",
-        "patterns": ["yazı tura at", "yazı mı tura mı", "yazı tura"],
-        "action": "python -c \"import random; print(random.choice(['Yazı geldi!', 'Tura geldi!']))\"",
-        "description": "Yazı tura atışı simüle eder",
-    },
-    {
-        "name": "zar_at",
-        "patterns": ["zar at", "zar fırlat", "zar atışı"],
-        "action": "python -c \"import random; print(f'Zar geldi: {random.randint(1, 6)}')\"",
-        "description": "1-6 arası rastgele zar atar",
     },
     {
         "name": "cikis",
@@ -152,4 +213,3 @@ def describe_all() -> str:
         if cmd.get("description"):
             lines.append(f"  {'':<18}   {cmd['description']}")
     return "\n".join(lines)
-
